@@ -71,6 +71,33 @@ L1:
 			println(x, y)
 		}
 	}
+
+	// return value of a map["key"] is a temporarily copied value
+	// so, if the value is a sturct, there's no point modifying the returned struct
+	myMap := map[int]struct {
+		name string
+		age  int
+	}{
+		1: {"Lisa", 28},
+		2: {"Tom", 33},
+	}
+	//myMap[1].age = 29 error:cannot assign to struct field myMap[1].age in map
+	//1: store back modifed value to map
+	lisa := myMap[1]
+	lisa.age = 29
+	myMap[1] = lisa
+	fmt.Println(myMap)
+	//2: use pointer
+	type user struct {
+		name string
+		age  int
+	}
+	myMap2 := map[int]*user{
+		1: &user{"Lisa", 28},
+		2: &user{"Tom", 33},
+	}
+	myMap2[1].age = 29
+	fmt.Println(*myMap2[1])
 }
 
 //below are for play2
