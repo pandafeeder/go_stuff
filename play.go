@@ -10,6 +10,7 @@ var unUsed = 100
 
 func main() {
 	play1()
+	play2()
 }
 
 func play1() {
@@ -71,3 +72,34 @@ L1:
 		}
 	}
 }
+
+//below are for play2
+//think of struct like a object
+type List struct {
+	elements []int
+}
+
+//create new object using factory pattern
+func newList() *List {
+	return &List{elements: make([]int, 0, 10)}
+}
+
+//methods
+func (l *List) length() int {
+	return len(l.elements)
+}
+func (l *List) push(e int) {
+	l.elements = append(l.elements, e)
+}
+
+func play2() {
+	l := newList()
+	println(l.length())
+	i := 10
+	l.push(i)
+	l.push(i)
+	l.push(i)
+	fmt.Println(l.elements)
+}
+
+//above are for play2
