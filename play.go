@@ -127,6 +127,48 @@ func play2() {
 	l.push(i)
 	l.push(i)
 	fmt.Println(l.elements)
+
+	d := Data{}
+	p := &d
+	fmt.Printf("Data: %p\n", p)
+	d.valueTest()
+	p.pointerTest()
+	fmt.Println(d)
+
+	dog := Dog{}
+	dog.makeSound()
+	dog.sleep()
+}
+
+type Data struct {
+	x int
+}
+
+func (d Data) valueTest() {
+	//value type argument is copied, won't mutate original data
+	fmt.Printf("Value: %p\n", &d)
+	d.x = 100
+}
+
+func (d *Data) pointerTest() {
+	fmt.Printf("Pointer: %p\n", d)
+}
+
+//mimic inheritance and method overrdie
+type Animal struct {
+}
+type Dog struct {
+	Animal
+}
+
+func (Animal) makeSound() {
+	println("Animal making sound")
+}
+func (Animal) sleep() {
+	println("I'm sleeping")
+}
+func (Dog) makeSound() {
+	println("Wang Wang Wang")
 }
 
 //above are for play2
