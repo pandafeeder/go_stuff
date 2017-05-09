@@ -131,8 +131,28 @@ func play2() {
 	d := Data{}
 	p := &d
 	fmt.Printf("Data: %p\n", p)
+	//compiler will automatically convert between Type *Type for methods
 	d.valueTest()
+	d.pointerTest()
+
+	//method value form, implicitly pass receiver
+	mValue := d.pointerTest
+	mValue()
+
+	//method expression form, explicitly pass receiver
+	mExpression := (*Data).pointerTest
+	mExpression(&d)
+
+	//Type cannot access *Type methods
+	//mExpression2 := Data.pointerTest
+
+	//while *Type can access Type methods
+	mExpression3 := (*Data).valueTest
+	mExpression3(&d)
+
+	println()
 	p.pointerTest()
+	p.valueTest()
 	fmt.Println(d)
 
 	dog := Dog{}
