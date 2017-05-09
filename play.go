@@ -3,6 +3,8 @@ package main
 
 import (
 	"fmt"
+	"math"
+	"reflect"
 )
 
 //unused global variable will not cause compiler error
@@ -11,6 +13,7 @@ var unUsed = 100
 func main() {
 	play1()
 	play2()
+	play3()
 }
 
 func play1() {
@@ -192,3 +195,67 @@ func (Dog) makeSound() {
 }
 
 //above are for play2
+
+//below are for play3
+type Stringer interface {
+	String() string
+}
+type Printer interface {
+	Stringer
+	Print()
+}
+type User struct {
+	id   int
+	name string
+}
+
+func (u *User) String() string {
+	return fmt.Sprintf("user %d, %s", u.id, u.name)
+}
+func (u *User) Print() {
+	fmt.Println(u.String())
+}
+
+//empty interfact{} is like root object in an oo language
+func typeof(v interface{}) string {
+	return reflect.TypeOf(v).String()
+}
+
+type Shape interface {
+	area() float64
+}
+type Rect struct {
+	height, width float64
+}
+type Circle struct {
+	r float64
+}
+
+func (r *Rect) area() float64 {
+	return r.height * r.width
+}
+func (c *Circle) area() float64 {
+	return math.Pi * c.r * c.r
+}
+func totalArea(shapes ...Shape) (area float64) {
+	for _, shape := range shapes {
+		area += shape.area()
+	}
+	return
+}
+
+func play3() {
+	var t Printer = &User{1, "Tom"}
+	t.Print()
+	println(typeof(t))
+	a := "hello"
+	println(typeof(a))
+	b := 32
+	println(typeof(b))
+
+	rect := Rect{10, 10}
+	c := Circle{10}
+	println(totalArea(&rect, &c))
+}
+
+//above are for play3
