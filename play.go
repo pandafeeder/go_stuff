@@ -244,6 +244,16 @@ func totalArea(shapes ...Shape) (area float64) {
 	return
 }
 
+//make type func() directly implement interfact directly
+type Tester interface {
+	Do()
+}
+type funcDo func()
+
+func (f funcDo) Do() {
+	f()
+}
+
 func play3() {
 	var t Printer = &User{1, "Tom"}
 	t.Print()
@@ -256,6 +266,24 @@ func play3() {
 	rect := Rect{10, 10}
 	c := Circle{10}
 	println(totalArea(&rect, &c))
+
+	u := User{1, "Tom"}
+	var i interface{} = u
+	u.id = 2
+	u.name = "Jack"
+	fmt.Printf("%v\n", u)
+	fmt.Printf("%v\n", i.(User))
+
+	var vi, pi interface{} = u, &u
+	//vi.(User).name = "Jack" //Error: cannot assiagn to vi.(User).name
+	println()
+	pi.(*User).name = "Jim"
+	fmt.Printf("%v\n", vi.(User))
+	fmt.Printf("%v\n", pi.(*User))
+	fmt.Printf("%v\n", u)
+
+	var t2 Tester = funcDo(func() { println("HELLO") })
+	t2.Do()
 }
 
 //above are for play3
