@@ -347,8 +347,47 @@ func play4() {
 	data <- 2
 	data <- 3
 	close(data)
-	print("send over")
-	<-exit
+	println("send over")
+	println(<-exit)
+
+	data2 := make(chan int, 3)
+	exit2 := make(chan bool)
+
+	data2 <- 1
+	data2 <- 2
+	data2 <- 3
+	go func() {
+		for {
+			if d, ok := <-data2; ok {
+				println(d)
+			} else {
+				exit2 <- true
+				break
+			}
+		}
+	}()
+	data2 <- 4
+	data2 <- 5
+	close(data2)
+	println(<-exit2)
+
+	c := make(chan int)
+	var sendOnly chan<- int = c
+	var recvOnly <-chan int = c
+
+	println()
+	go func() {
+		for i := range recvOnly {
+			println(i)
+		}
+	}()
+
+	for i := 0; i < 3; i++ {
+		sendOnly <- i
+	}
+
+	close(c)
+
 }
 
 //above are for goroutine
