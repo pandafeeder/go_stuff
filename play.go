@@ -5,18 +5,23 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"runtime"
+	"sync"
 )
 
 //unused global variable will not cause compiler error
 var unUsed = 100
 
 func main() {
+	runtime.GOMAXPROCS(1)
 	play1()
 	play2()
 	play3()
+	play4()
 }
 
 func play1() {
+	println("###### PLAY1 ######:")
 	//unused local const will not cause compiler error
 	const (
 		_ = iota
@@ -123,6 +128,7 @@ func (l *List) push(e int) {
 }
 
 func play2() {
+	println("###### PLAY2 ######:")
 	l := newList()
 	println(l.length())
 	i := 10
@@ -244,7 +250,7 @@ func totalArea(shapes ...Shape) (area float64) {
 	return
 }
 
-//make type func() directly implement interfact directly
+//make type func() directly implement interface directly
 type Tester interface {
 	Do()
 }
@@ -255,6 +261,7 @@ func (f funcDo) Do() {
 }
 
 func play3() {
+	println("###### PLAY3 ######:")
 	var t Printer = &User{1, "Tom"}
 	t.Print()
 	println(typeof(t))
@@ -287,3 +294,61 @@ func play3() {
 }
 
 //above are for play3
+
+//below are for goroutine
+func sum(id int) {
+	var x int64
+	for i := 0; i < math.MaxUint32; i++ {
+		x += int64(i)
+	}
+	println(id, x)
+}
+func play4() {
+	println("###### PLAY4 ######:")
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
+
+	for i := 0; i < 2; i++ {
+		go func(id int) {
+			defer wg.Done()
+			sum(id)
+		}(i)
+	}
+	wg.Wait()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		defer println("A.defer")
+
+		func() {
+			defer println("B.defer")
+			//terminate execution with defer exected
+			runtime.Goexit()
+			println("B") //not executed
+		}()
+
+		println("A") //not executed
+	}()
+	wg.Wait()
+
+	data := make(chan int)
+	exit := make(chan bool)
+
+	go func() {
+		for i := range data {
+			println(i)
+		}
+		println("receive over")
+		exit <- true
+	}()
+
+	data <- 1
+	data <- 2
+	data <- 3
+	close(data)
+	print("send over")
+	<-exit
+}
+
+//above are for goroutine
