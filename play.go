@@ -270,6 +270,13 @@ func play3() {
 	b := 32
 	println(typeof(b))
 
+	var o interface{} = &User{1, "Tom"}
+	if i, ok := o.(fmt.Stringer); ok {
+		fmt.Println(i)
+	}
+	u1 := o.(*User)
+	fmt.Println(u1)
+
 	rect := Rect{10, 10}
 	c := Circle{10}
 	println(totalArea(&rect, &c))
@@ -385,8 +392,54 @@ func play4() {
 	for i := 0; i < 3; i++ {
 		sendOnly <- i
 	}
-
 	close(c)
+
+	c1, c2 := make(chan int, 3), make(chan int)
+
+	go func() {
+		v, ok, s := 0, false, ""
+		for {
+			select {
+			case v, ok = <-c1:
+				s = "c1"
+			case v, ok = <-c2:
+				s = "c2"
+			}
+
+			if ok {
+				fmt.Println(s, v)
+			} else {
+				break
+			}
+		}
+	}()
+
+	for i := 0; i < 5; i++ {
+		select {
+		case c1 <- i:
+		case c2 <- i:
+		}
+	}
+
+	close(c1)
+	close(c2)
+
+	wg2 := sync.WaitGroup{}
+	wg2.Add(3)
+	sem := make(chan int, 1)
+
+	for i := 0; i < 3; i++ {
+		go func(id int) {
+			defer wg2.Done()
+			sem <- 1
+			for x := 0; x < 3; x++ {
+				fmt.Println(id, x)
+			}
+			<-sem
+		}(i)
+	}
+
+	wg2.Wait()
 
 }
 
