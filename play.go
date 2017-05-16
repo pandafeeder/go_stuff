@@ -449,14 +449,6 @@ func play4() {
 //reflect
 
 func play5() {
-	type Person struct {
-		Name string
-		age  int
-	}
-	type Teacher struct {
-		Person
-		Vocation string
-	}
 	laoli := Teacher{
 		Person{"laoli", 33},
 		"Teaching",
@@ -491,4 +483,32 @@ func play5() {
 		fmt.Println(f.Name, f.Type)
 	}
 
+	//different accessbility to methods between Type and *Type
+	methods := func(t reflect.Type) {
+		for i, n := 0, t.NumMethod(); i < n; i++ {
+			m := t.Method(i)
+			fmt.Println(m.Name)
+		}
+	}
+	var xiaohong Teacher
+	fmt.Println("--- value interface ---")
+	methods(reflect.TypeOf(xiaohong))
+	fmt.Println("--- pointer interface ---")
+	methods(reflect.TypeOf(&xiaohong))
+}
+
+type Person struct {
+	Name string
+	age  int
+}
+type Teacher struct {
+	Person
+	Vocation string
+}
+
+func (*Person) PersonMethod() {
+	println("Person method")
+}
+func (Teacher) TeacherMethod() {
+	println("Teacher method")
 }
