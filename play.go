@@ -18,6 +18,7 @@ func main() {
 	play2()
 	play3()
 	play4()
+	play5()
 }
 
 func play1() {
@@ -444,3 +445,50 @@ func play4() {
 }
 
 //above are for goroutine
+
+//reflect
+
+func play5() {
+	type Person struct {
+		Name string
+		age  int
+	}
+	type Teacher struct {
+		Person
+		Vocation string
+	}
+	laoli := Teacher{
+		Person{"laoli", 33},
+		"Teaching",
+	}
+
+	//type assertion: seems not parctical in statement code
+	//more sutiable for function parameter type check
+	var i interface{} = laoli
+	s, ok := i.(Teacher)
+	if ok {
+		fmt.Println("Type assertion:")
+		fmt.Println(s)
+	}
+
+	//reflect: more common in statement
+	//1. concrete type
+	t := reflect.TypeOf(laoli)
+	if t.String() == "main.Teacher" {
+		fmt.Println("Type checking by String value")
+	}
+	for i, n := 0, t.NumField(); i < n; i++ {
+		f := t.Field(i)
+		fmt.Println(f.Name, f.Type)
+	}
+	//2. pointer
+	p := reflect.TypeOf(&laoli)
+	if p.Kind() == reflect.Ptr {
+		p = p.Elem()
+	}
+	for i, n := 0, p.NumField(); i < n; i++ {
+		f := p.Field(i)
+		fmt.Println(f.Name, f.Type)
+	}
+
+}
